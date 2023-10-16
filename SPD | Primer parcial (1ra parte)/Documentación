@@ -1,1 +1,20 @@
+# Contador con Display de 7 Segmentos
 
+Este es un proyecto de Arduino para contar y mostrar números en un display de 7 segmentos. Puede contar desde 0 hasta 99 y permite sumar, restar y restablecer el contador mediante botones.
+
+## Materiales
+- Arduino UNO o una placa compatible.
+- 2 Display de 7 segmentos.
+- 3 pulsadores para sumar, restar y restablecer.
+- Conexiones de cableado.
+- Protoboard
+
+## Configuración del Hardware
+- Conecta el display de 7 segmentos y los botones según las especificaciones detalladas en el código y en el esquematico proporcionado.
+
+## Uso
+1. Carga el código en tu placa Arduino.
+2. Asegúrate de que el hardware esté correctamente conectado.
+3. Enciende la placa Arduino.
+4. Utiliza los botones para sumar, restar o restablecer el contador.
+5. Observa el contador en el display de 7 segmentos.
