@@ -1,1 +1,211 @@
+// Definición de constantes
+#define A 10
+#define B 11
+#define C 7
+#define D 6
+#define E 5
+#define F 9
+#define G 8
+#define MAS 4
+#define MENOS 3
+#define RESET 2
+#define UNIDAD A0
+#define DECENA A1
+#define APAGADO 0
+#define TIME_DISPLAY 10
 
+// Variables globales
+int numero = 0;
+int mas = 1;
+int a_mas = 1;
+int menos = 1;
+int a_menos = 1;
+int reset = 1;
+int a_reset = 1;
+
+// Configuración inicial
+void setup() { // Configuramos los pines de entrada y salida
+  pinMode(RESET, INPUT_PULLUP);
+  pinMode(MENOS, INPUT_PULLUP);
+  pinMode(MAS, INPUT_PULLUP);
+  
+  pinMode(A, OUTPUT);
+  pinMode(B, OUTPUT);
+  pinMode(C, OUTPUT);
+  pinMode(D, OUTPUT);
+  pinMode(E, OUTPUT);
+  pinMode(F, OUTPUT);
+  pinMode(G, OUTPUT);
+  pinMode(DECENA, OUTPUT);
+  pinMode(UNIDAD, OUTPUT);
+}
+
+void loop() {
+  
+  iniciarContador(numero); // Empezamos el contador
+ 
+  int presionado = botonPresionado();
+
+  if (presionado == mas) { // Si el pulsador es el de sumar, sumamos 1 al contador.
+    numero++;
+    if (numero > 99) // Controlamos que no sea mayor a 99, en ese caso lo llevamos al mínimo (0).
+      numero = 0;
+   
+   delay(150); // Agregamos un delay para evitar detección de múltiples pulsaciones
+  } 
+  
+  else if (presionado == menos) { // Si el pulsador es el de restar, restamos 1 al contador.
+    numero--;
+    if (numero < 0) // Controlamos que no sea menor a 0, en ese caso lo llevamos al máximo (99).
+      numero = 99;
+    delay(150); // Agregamos un delay para evitar detección de múltiples pulsaciones
+  } 
+  
+  else if (presionado == reset) { // Reiniciamos el contador en 0.
+    numero = 0;
+  }
+
+  delay(25); // Pequeño delay para estabilidad
+}
+
+// Función para mostrar números en el display de 7 segmentos
+void verEnDisplay(int numero) {
+  
+  apagar_displays(); // Apagamos todos los segmentos.
+  
+  switch(numero) {
+    case 0:
+      digitalWrite(A, HIGH); // Prende los segmentos para mostrar el número 0
+      digitalWrite(B, HIGH);
+      digitalWrite(C, HIGH);
+      digitalWrite(D, HIGH);
+      digitalWrite(E, HIGH);
+      digitalWrite(F, HIGH);
+      break;
+    case 1:
+      digitalWrite(B, HIGH); // Prende los segmentos para mostrar el número 1
+      digitalWrite(C, HIGH);
+      delay(25); // un delay para una mejor visualización
+      break;
+    case 2:
+      digitalWrite(A, HIGH); // Enciende los segmentos para mostrar el número 2
+      digitalWrite(B, HIGH);
+      digitalWrite(G, HIGH);
+      digitalWrite(E, HIGH);
+      digitalWrite(D, HIGH);
+      break;
+    case 3:
+      digitalWrite(A, HIGH); // Enciende los segmentos para mostrar el número 3
+      digitalWrite(B, HIGH);
+      digitalWrite(G, HIGH);
+      digitalWrite(C, HIGH);
+      digitalWrite(D, HIGH);
+      break;
+    case 4:
+      digitalWrite(F, HIGH); // Enciende los segmentos para mostrar el número 4
+      digitalWrite(G, HIGH);
+      digitalWrite(B, HIGH);
+      digitalWrite(C, HIGH);
+      break;
+    case 5:
+      digitalWrite(A, HIGH); // Enciende los segmentos para mostrar el número 5
+      digitalWrite(F, HIGH);
+      digitalWrite(G, HIGH);
+      digitalWrite(C, HIGH);
+      digitalWrite(D, HIGH);
+      break;
+    case 6:
+      digitalWrite(A, HIGH); // Enciende los segmentos para mostrar el número 6
+      digitalWrite(F, HIGH);
+      digitalWrite(G, HIGH);
+      digitalWrite(C, HIGH);
+      digitalWrite(D, HIGH);
+      digitalWrite(E, HIGH);
+      break;
+    case 7:
+      digitalWrite(A, HIGH); // Enciende los segmentos para mostrar el número 7
+      digitalWrite(B, HIGH);
+      digitalWrite(C, HIGH);
+      break;
+    case 8:
+      digitalWrite(A, HIGH); // Enciende los segmentos para mostrar el número 8
+      digitalWrite(B, HIGH);
+      digitalWrite(C, HIGH);
+      digitalWrite(D, HIGH);
+      digitalWrite(E, HIGH);
+      digitalWrite(F, HIGH);
+      digitalWrite(G, HIGH);
+      break;
+    case 9:
+      digitalWrite(A, HIGH); // Enciende los segmentos para mostrar el número 9
+      digitalWrite(F, HIGH);
+      digitalWrite(G, HIGH);
+      digitalWrite(B, HIGH);
+      digitalWrite(C, HIGH);
+      break;
+  }
+}
+
+// Función para determinar qué display debe encender(unidades o decenas)
+void digitoEncendido(int numero) {
+  if (numero == UNIDAD) {
+    digitalWrite(UNIDAD, LOW); // Prende el display de las unidades y apaga el de las decenas
+    digitalWrite(DECENA, HIGH);
+    delay(TIME_DISPLAY); // Tiempo de visualización del display
+  } 
+  else if (numero == DECENA) {
+    digitalWrite(UNIDAD, HIGH); // Prende el display de las decenas y apaga el de las unidades
+    digitalWrite(DECENA, LOW);
+    delay(TIME_DISPLAY); // Tiempo de visualización del display
+  } 
+  else {
+    digitalWrite(UNIDAD, HIGH); // Ambos displays apagados
+    digitalWrite(DECENA, HIGH);
+  }
+}
+
+void iniciarContador(int numero) {
+  digitoEncendido(APAGADO); // Apaga ambos displays
+  verEnDisplay(numero / 10); // Muestra la decena
+  digitoEncendido(DECENA); // Prende el display de las decenas
+  digitoEncendido(APAGADO); // Apaga ambos displays
+  verEnDisplay(numero - 10 * ((int)numero / 10)); // Muestra la unidad
+  digitoEncendido(UNIDAD); // Enciende el display de las unidades
+}
+
+int botonPresionado(void) {
+  mas = digitalRead(MAS); // Lee el estado del botón de suma
+  menos = digitalRead(MENOS); // Lee el estado del botón de resta
+  reset = digitalRead(RESET); // Lee el estado del botón de reset
+  
+  if (mas == 1)
+    a_mas = 1; // Almacena el estado anterior del botón de suma
+  if (menos == 1)
+    a_menos = 1; // Almacena el estado anterior del botón de resta
+  if (reset == 1)
+    a_reset = 1; // Almacena el estado anterior del botón de reset
+  
+  if (mas == 0 && mas != a_mas) {
+    a_mas = mas; // Actualiza el estado anterior del botón de suma
+    return mas; // Retorna la acción del botón (suma)
+  }
+  if (menos == 0 && menos != a_menos) {
+    a_menos = menos; // Actualiza el estado anterior del botón de resta
+    return menos; // Retorna la acción del botón (resta)
+  }
+  if (reset == 0 && reset != a_reset) {
+    a_reset = reset; // Actualiza el estado anterior del botón de reset
+    return reset; // Retorna la acción del botón (reset)
+  }
+  return 0; // No se ha presionado ningún botón
+}
+
+void apagar_displays() {
+  digitalWrite(A, LOW); // Apaga el segmento A
+  digitalWrite(B, LOW); // Apaga el segmento B
+  digitalWrite(C, LOW); // Apaga el segmento C
+  digitalWrite(D, LOW); // Apaga el segmento D
+  digitalWrite(E, LOW); // Apaga el segmento E
+  digitalWrite(F, LOW); // Apaga el segmento F
+  digitalWrite(G, LOW); // Apaga el segmento G
+}
