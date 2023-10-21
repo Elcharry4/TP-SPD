@@ -1,0 +1,26 @@
+Contador con Display de 7 Segmentos, Sensor de Temperatura y LDR
+
+Descripción:
+Este proyecto de Arduino utiliza un display de 7 segmentos para mostrar un contador que puede contar desde 0 hasta 99 o los numeros primos del 0 al 99 dependendiendo de si es de dia o de noche. Además, incluye un sensor de temperatura que muestra la temperatura actual.
+
+Materiales:
+Arduino UNO o una placa compatible.
+Display de 7 segmentos de dos dígitos.
+Sensor de temperatura (por ejemplo, LM35).
+LDR.
+Conexiones de cableado.
+Protoboard.
+
+Configuración del Hardware:
+Conecta el display de 7 segmentos a los pines adecuados de Arduino.
+Conecta el sensor de temperatura al puerto analógico de Arduino.
+Conecta el LDR al Arduino.
+
+Uso:
+Carga el código en tu placa Arduino utilizando el IDE de Arduino.
+Asegúrate de que el hardware esté correctamente conectado.
+Enciende la placa Arduino.
+Cuando es de dia o hay una buena iluminacion se vera el contador de enteros(0-99)
+Cuando es de noche o algo tapo la iluminacion se vera el contador de numeros primos(0-99)
+El display de 7 segmentos mostrará el contador en un rango de 0 a 99. Cada segundo, se incrementará en uno.
+Observa el monitor de serie del ide para ver la temperatura actual.
