@@ -1,0 +1,7 @@
+Motor CC:
+es una máquina giratoria que convierte energía eléctrica en energía mecánica.
+Esta funcionalidad está basada en el principio de inducción, bajo el cual se crea una fuerza electromagnética a partir de una corriente de entrada continua que, a la vez, crea un movimiento giratorio.
+Tambien podes darle el sentido de giro con la polaridad de alimentacion.
+Yo lo integraria en el proyecto de una forma para que el contador simbolize un porcentaje de velocidad para el motor, controlandolo por pwm y un modulo L298N para poder alimentarlo con 12v externos al arduino,
+esto se hace porque el arduino ofrece una cantidad de corriente(mA) limitada y ademas para protejerlo de algun sobreconsumo o recalentamiento, etc. 
+Tambien podriamos usar la llave deslizante para darle el sentido de giro, Tambien podriamos usar la funcion de los numeros primos como un proceso de aceleracion mas rapido. 
