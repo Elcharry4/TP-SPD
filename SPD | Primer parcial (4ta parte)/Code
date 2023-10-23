@@ -1,0 +1,219 @@
+// Definición de constantes
+#define A 10
+#define B 11
+#define C 7
+#define D 6
+#define E 5
+#define F 9
+#define G 8
+#define LDR_MODO A3
+#define UNIDAD A0
+#define DECENA A1
+#define APAGADO 0
+#define TIME_DISPLAY 20
+#define pin_temp A2 // Puerto analógico utilizado para la lectura de la temperatura
+#define PW_ON 4
+
+// Variables globales
+int numeroPrimo = 2;   // Guarda el valor del numero primo
+int numero = 0;        // Guarda el valor del contador
+int posicion = 0; // Enteros o Primos.
+int switch_on = 0; 
+float temperatura = 0; // guarda el valor de temperatura
+
+// Configuración inicial
+void setup() { // Configuramos los pines de entrada y salida
+  
+  pinMode(PW_ON, INPUT_PULLUP);
+  pinMode(LDR_MODO, INPUT);
+  pinMode(pin_temp,INPUT);
+  pinMode(A, OUTPUT);
+  pinMode(B, OUTPUT);
+  pinMode(C, OUTPUT);
+  pinMode(D, OUTPUT);
+  pinMode(E, OUTPUT);
+  pinMode(F, OUTPUT);
+  pinMode(G, OUTPUT);
+  pinMode(DECENA, OUTPUT);
+  pinMode(UNIDAD, OUTPUT);
+  Serial.begin (9600); // iniciliza el serial.
+
+}
+
+void loop() {
+  
+  int valor_ldr = analogRead(LDR_MODO); // lectura del Fotoresistor
+  if (valor_ldr > 125)	{
+    posicion = 1;		}
+  else	{
+    posicion = 0;		}
+
+  switch_on = digitalRead(PW_ON); // Lee el estado del interruptor
+                          
+  if (switch_on == 0) {
+    apagar_displays(); // Apaga los displays si el interruptor está en la posición deseada
+  } else {
+  			switch (posicion) {
+                  case 0: {
+                      if (numero < 100) { // cuando llega a 99 vuelve a empezar el bucle.
+                          numero++; // suma 1 al contador en cada vuelta.
+                      }
+                      iniciar_contador_entero(numero); // inicializa el contador.
+                      delay(1000); // actualiza cada 1s el numero a mostrar.
+                      break;
+                  }
+
+                  case 1: {
+                      numeroPrimo++;
+                      if (numeroPrimo > 97) {
+                          numeroPrimo = 0;
+                          }
+                      if (esPrimo(numeroPrimo)) {
+                          iniciarContadorPrimo(numeroPrimo); // Llamada a la función displayNumeroPrimo
+                          delay(1000); // Ajusta el tiempo según lo que necesites
+                          }
+                   }
+  	 }
+    }
+  temperatura = map(analogRead (pin_temp),0,1023,-50,450); // transforma el valor de lectura crudo al correcto.
+  Serial.println("Temperatura:"); // imprime por el serial 
+  Serial.println(temperatura); // imprime valor de temperatura en el serial
+  
+}
+// Función para mostrar números en el display de 7 segmentos
+void verEnDisplay(int numero) {
+  
+  apagar_displays(); // Apagamos todos los segmentos.
+  
+  switch(numero) {
+    case 0:
+      digitalWrite(A, HIGH); // Prende los segmentos para mostrar el número 0
+      digitalWrite(B, HIGH);
+      digitalWrite(C, HIGH);
+      digitalWrite(D, HIGH);
+      digitalWrite(E, HIGH);
+      digitalWrite(F, HIGH);
+      break;
+    case 1:
+      digitalWrite(B, HIGH); // Prende los segmentos para mostrar el número 1
+      digitalWrite(C, HIGH);
+      break;
+    case 2:
+      digitalWrite(A, HIGH); // Enciende los segmentos para mostrar el número 2
+      digitalWrite(B, HIGH);
+      digitalWrite(G, HIGH);
+      digitalWrite(E, HIGH);
+      digitalWrite(D, HIGH);
+      break;
+    case 3:
+      digitalWrite(A, HIGH); // Enciende los segmentos para mostrar el número 3
+      digitalWrite(B, HIGH);
+      digitalWrite(G, HIGH);
+      digitalWrite(C, HIGH);
+      digitalWrite(D, HIGH);
+      break;
+    case 4:
+      digitalWrite(F, HIGH); // Enciende los segmentos para mostrar el número 4
+      digitalWrite(G, HIGH);
+      digitalWrite(B, HIGH);
+      digitalWrite(C, HIGH);
+      break;
+    case 5:
+      digitalWrite(A, HIGH); // Enciende los segmentos para mostrar el número 5
+      digitalWrite(F, HIGH);
+      digitalWrite(G, HIGH);
+      digitalWrite(C, HIGH);
+      digitalWrite(D, HIGH);
+      break;
+    case 6:
+      digitalWrite(A, HIGH); // Enciende los segmentos para mostrar el número 6
+      digitalWrite(F, HIGH);
+      digitalWrite(G, HIGH);
+      digitalWrite(C, HIGH);
+      digitalWrite(D, HIGH);
+      digitalWrite(E, HIGH);
+      break;
+    case 7:
+      digitalWrite(A, HIGH); // Enciende los segmentos para mostrar el número 7
+      digitalWrite(B, HIGH);
+      digitalWrite(C, HIGH);
+      break;
+    case 8:
+      digitalWrite(A, HIGH); // Enciende los segmentos para mostrar el número 8
+      digitalWrite(B, HIGH);
+      digitalWrite(C, HIGH);
+      digitalWrite(D, HIGH);
+      digitalWrite(E, HIGH);
+      digitalWrite(F, HIGH);
+      digitalWrite(G, HIGH);
+      break;
+    case 9:
+      digitalWrite(A, HIGH); // Enciende los segmentos para mostrar el número 9
+      digitalWrite(F, HIGH);
+      digitalWrite(G, HIGH);
+      digitalWrite(B, HIGH);
+      digitalWrite(C, HIGH);
+      break;
+  }
+}
+
+void iniciar_contador_entero(int numero) {
+  digitoEncendido(APAGADO); // Apaga ambos displays
+  verEnDisplay(numero - 10 * ((int)numero / 10)); // Muestra la unidad
+  digitoEncendido(UNIDAD); // Enciende el display de las unidades
+  digitoEncendido(APAGADO); // Apaga ambos displays
+  verEnDisplay(numero / 10); // Muestra la decena
+  digitoEncendido(DECENA); // Prende el display de las decenas
+}
+
+void iniciarContadorPrimo(int numeroPrimo) {
+  digitoEncendido(APAGADO); // Apaga ambos displays
+  verEnDisplay(numeroPrimo % 10);  // Muestra la unidad
+  digitoEncendido(UNIDAD); // Enciende el display de las unidades
+  digitoEncendido(APAGADO); // Apaga ambos displays
+  verEnDisplay(numeroPrimo / 10); // Muestra la decena
+  digitoEncendido(DECENA); // Prende el display de las decenas
+}
+
+// Función para determinar qué display debe encender(unidades o decenas)
+void digitoEncendido(int numero) {
+  if (numero == UNIDAD) {
+    digitalWrite(DECENA, HIGH); // Prende el display de las unidades
+    digitalWrite(UNIDAD, LOW); //  Apaga el de las decenas
+    delay(TIME_DISPLAY);// Tiempo de visualización del display
+  } 
+  else if (numero == DECENA) {
+    digitalWrite(UNIDAD, HIGH); // Prende el display de las unidades
+    digitalWrite(DECENA, LOW); //  Apaga el de las decenas
+    delay(TIME_DISPLAY); // Tiempo de visualización del display
+  } 
+  else {
+    digitalWrite(UNIDAD, HIGH); // Ambos displays apagados
+    digitalWrite(DECENA, HIGH);
+    delay(TIME_DISPLAY);
+  }
+}
+
+bool esPrimo(int numero) { // Comprobar si un número es primo
+    if (numero <= 1) {
+        return false; // Los números menores o iguales a 1 no son primos
+    }
+
+    for (int divisor = 2; divisor * divisor <= numero; ++divisor) {
+        if (numero % divisor == 0) {
+            return false; // Si se encuentra un divisor, el número no es primo
+        }
+    }
+
+    return true; // Si no se encontraron divisores, el número es primo
+}
+
+void apagar_displays() {
+  digitalWrite(A, LOW); // Apaga el segmento A
+  digitalWrite(B, LOW); // Apaga el segmento B
+  digitalWrite(C, LOW); // Apaga el segmento C
+  digitalWrite(D, LOW); // Apaga el segmento D
+  digitalWrite(E, LOW); // Apaga el segmento E
+  digitalWrite(F, LOW); // Apaga el segmento F
+  digitalWrite(G, LOW); // Apaga el segmento G
+}
